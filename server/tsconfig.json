@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
+    // node16, no "node" (node10): node10 está deprecado desde TypeScript 5.x
+    // y deja de funcionar en la 7. Se usa node16 porque el paquete no declara
+    // "type": "module", así que sigue emitiendo CommonJS y los imports relativos
+    // pueden ir sin extensión — que es lo que necesitan ts-node, tsx y Jest.
+    "module": "node16",
+    "moduleResolution": "node16",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
