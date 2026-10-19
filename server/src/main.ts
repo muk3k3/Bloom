@@ -3,10 +3,19 @@ import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
+import { exigirEntorno } from "./common/auth/entorno";
 
 async function arrancar() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
+
+  // Falla rápido y con un mensaje claro, ANTES de abrir el puerto.
+  // Se valida aquí y no en el constructor de AppModule porque ConfigModule
+  // todavía no ha leído el .env en ese punto.
+  exigirEntorno({
+    OWNER_EMAIL: config.get<string>("OWNER_EMAIL"),
+    COOKIE_SECRET: config.get<string>("COOKIE_SECRET"),
+  });
 
   // Todo el API vive bajo /api, para que el cliente lo reescriba en un solo origen
   app.setGlobalPrefix("api");
