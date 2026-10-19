@@ -50,14 +50,11 @@ jobs:
       - name: Verificar formato
         run: npm run format:check
 
-      - name: Pruebas del servidor
-        run: npm run test --workspace=server
+      # Los pasos de paquetes delegan en los scripts de la raíz, que ya usan
+      # --workspaces --if-present. Así la CI empieza a probar server/ y client/
+      # en cuanto tengan script, sin volver a editar este archivo.
+      - name: Pruebas
+        run: npm run test -- --coverage
 
-      - name: Pruebas del cliente
-        run: npm run test --workspace=client
-
-      - name: Build del cliente
-        run: npm run build --workspace=client
-
-      - name: Build del servidor
-        run: npm run build --workspace=server
+      - name: Build
+        run: npm run build
