@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Tokens de Bloom
+   Vienen de "Bloom — Diseño" en Notion. Si un color, una fuente o un
+   espaciado no está aquí, no existe: no se escribe a mano en un componente.
+
+   Contraste verificado (WCAG AA) sobre su fondo:
+     texto/fondo 13.9:1 · texto-suave/fondo 5.4:1 · blanco/rosa-600 5.4:1
+     rosa-700/fondo 7.4:1 · blanco/hoja-600 4.9:1 · blanco/whatsapp-oscuro 7.7:1
+   ------------------------------------------------------------------ */
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
+
+  /* Marca — rosado cálido */
+  --color-rosa-50: #fbeef4;
+  --color-rosa-500: #c25e86;
+  --color-rosa-600: #a94a70;
+  --color-rosa-700: #8b3a5a;
+
+  /* Verde botánico */
+  --color-hoja-50: #eef5ef;
+  --color-hoja-600: #4a7c59;
+  --color-hoja-700: #3a6447;
+
+  /* Acento cálido, solo decorativo */
+  --color-tierra-500: #c97b4e;
+
+  /* Excepción deliberada: colores oficiales de WhatsApp.
+     El único componente fuera de los tokens. */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-oscuro: #075e54;
+
+  /* Neutros con temperatura */
+  --color-fondo: #fbf7f3;
+  --color-superficie: #ffffff;
+  --color-linea: #ede4dc;
+  --color-texto: #2a2320;
+  --color-texto-suave: #6b5f58;
+  --color-texto-apagado: #a89e96;
+
+  /* Estados */
+  --color-exito: #2f6b3a;
+  --color-exito-fondo: #e4f2e2;
+  --color-alerta: #8a5a18;
+  --color-alerta-fondo: #fbefd8;
+  --color-error: #a83232;
+  --color-error-fondo: #fbe3e3;
+  --color-info: #3c5a8a;
+  --color-info-fondo: #e3ebf7;
+
+  /* Sombras suaves y cálidas (nunca negro puro) */
+  --shadow-tarjeta: 0 1px 3px rgb(42 35 32 / 0.06), 0 8px 24px rgb(42 35 32 / 0.04);
+  --shadow-alza: 0 4px 8px rgb(42 35 32 / 0.08), 0 16px 32px rgb(42 35 32 / 0.06);
+  --shadow-modal: 0 24px 48px rgb(42 35 32 / 0.16);
+}
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+}
+
+/* Fraunces solo en títulos: es la voz cálida de la marca */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Los montos y las horas se alinean en columna */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

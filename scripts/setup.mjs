@@ -44,11 +44,20 @@ function scriptsDe(paquete) {
 // ---------------------------------------------------------------- Node
 
 paso("Verificando Node");
-const mayor = Number(process.versions.node.split(".")[0]);
-if (mayor < 20) {
-  console.error(`  [31m✗[0m Necesitas Node 20 o superior. Tienes ${process.versions.node}.`);
+
+const [mayor, menor] = process.versions.node.split(".").map(Number);
+
+// 22.19 es el piso real: jsdom 30 -> undici 8 declara engines node >=22.19.0
+const MINIMO = [22, 19];
+const suficiente = mayor > MINIMO[0] || (mayor === MINIMO[0] && menor >= MINIMO[1]);
+
+if (!suficiente) {
+  console.error(
+    `  [31m✗[0m Necesitas Node ${MINIMO[0]}.${MINIMO[1]} o superior. Tienes ${process.versions.node}.`,
+  );
   process.exit(1);
 }
+
 ok(`Node ${process.versions.node}`);
 
 // ------------------------------------------------------------ Paquetes

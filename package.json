@@ -4,7 +4,7 @@
   "private": true,
   "description": "Catálogo web para una floristería. El propietario publica ramos y arreglos; los clientes cotizan por WhatsApp.",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.19.0"
   },
   "workspaces": [
     "client",
