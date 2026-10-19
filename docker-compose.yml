@@ -1,0 +1,33 @@
+# PostgreSQL para desarrollo.
+#
+# El puerto 5433 es a propósito: el 5432 suele estar ocupado
+# por el Postgres que instala Docker Desktop o por uno local.
+#
+#   docker compose up -d          levantar
+#   docker compose down           apagar
+#   docker compose logs postgres  ver el registro
+#
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bloom-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bloom
+      POSTGRES_PASSWORD: bloom
+      POSTGRES_DB: bloom
+      # Checksums: permite comparar datos entre entornos
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    ports:
+      - "5433:5432"
+    volumes:
+      - bloom-datos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bloom -d bloom"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  bloom-datos:
+    name: bloom-datos

@@ -1,0 +1,88 @@
+// Bloom — modelo de datos
+// Fuente de verdad. Las migraciones se generan con Prisma, nunca se editan a mano.
+//
+// Convenciones:
+//   · Modelos en PascalCase, tablas en snake_case
+//   · Nombres del dominio en español, SIN tildes ni ñ
+//   · El dinero es Decimal(10,2), en soles
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Prisma 7 ya no acepta `url` ni `directUrl` aquí.
+  // Las conexiones viven en prisma.config.ts y el cliente usa
+  // un driver adapter (@prisma/adapter-pg). Ver docs/prisma-7.md
+}
+
+/// Un ramo o arreglo floral del catálogo.
+model Producto {
+  id          String  @id @default(uuid())
+  nombre      String  @db.VarChar(120)
+  slug        String  @unique @db.VarChar(140)
+  descripcion String  @db.Text
+  precio      Decimal @db.Decimal(10, 2)
+  activo      Boolean @default(true)
+  orden       Int     @default(0)
+  categoriaId String? @map("categoria_id")
+
+  // Si el dueño borra una categoría, sus productos NO se borran:
+  // quedan sin categoría y siguen visibles en el catálogo.
+  categoria Categoria? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  fotos     Foto[]
+
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@map("producto")
+  @@index([activo, orden])
+  @@index([categoriaId])
+}
+
+/// Categoría libre que crea el dueño. No hay lista fija.
+model Categoria {
+  id     String @id @default(uuid())
+  nombre String @unique @db.VarChar(60)
+  slug   String @unique @db.VarChar(70)
+  orden  Int    @default(0)
+
+  productos Producto[]
+
+  @@map("categoria")
+}
+
+/// Una foto de un producto, ya optimizada por el módulo media.
+/// Guardamos dos rutas: la completa y el thumbnail que usa la rejilla.
+model Foto {
+  id            String  @id @default(uuid())
+  productoId    String  @map("producto_id")
+  rutaOriginal  String  @map("ruta_original")
+  rutaThumbnail String  @map("ruta_thumbnail")
+  orden         Int     @default(0)
+
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@map("foto")
+  @@index([productoId])
+}
+
+/// Datos del negocio. Es un registro único: siempre id "unico".
+model InformacionNegocio {
+  id            String  @id @default("unico")
+  nombre        String  @db.VarChar(120)
+  whatsapp      String  @db.VarChar(20)
+  descripcion   String? @db.Text
+  direccion     String? @db.VarChar(200)
+  mapaUrl       String? @map("mapa_url")
+  instagramUrl  String? @map("instagram_url")
+  facebookUrl   String? @map("facebook_url")
+  horarios      Json?
+
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  @@map("informacion_negocio")
+}
