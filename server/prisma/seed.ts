@@ -19,13 +19,7 @@ import { Prisma, PrismaClient } from "../src/generated/prisma/client.js";
 const DESARROLLO = "postgresql://bloom:bloom@localhost:5433/bloom?schema=public";
 
 // El seed corre fuera de NestJS, así que lee el entorno por su cuenta.
-for (const [clave, valor] of Object.entries({
-  DATABASE_URL: process.env.DATABASE_URL,
-  DIRECT_URL: process.env.DIRECT_URL,
-})) {
-  if (valor) process.env[clave] = valor;
-}
-
+// tsx carga server/.env automáticamente; si no está, cae a la de desarrollo.
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL ?? DESARROLLO }),
 });
