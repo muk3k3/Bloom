@@ -1,4 +1,4 @@
-#  Bloom — Catálogo de floristería
+# Bloom — Catálogo de floristería
 
 Catálogo web para una floristería peruana. El propietario publica sus ramos y arreglos
 florales con fotos, precio y descripción; los clientes navegan el catálogo **sin registrarse**
