@@ -1,0 +1,54 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Prisma: el cliente se genera, no se versiona
+server/src/generated/
+server/prisma/dev.db*
+
+# Pruebas
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Entorno — NUNCA versionar. Aquí van claves reales
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Agentes de IA — no se permiten dentro del repositorio
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.claude/
+.codex/
+.cursor/
+.opencode/
+opencode.json
+.mcp.json
+.github/copilot-instructions.md
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Datos de prueba locales
+.uploads/

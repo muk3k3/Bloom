@@ -1,0 +1,19 @@
+# Forzar LF en todo el repositorio.
+# En Windows, sin esto Git convierte a CRLF y los hooks de shell se rompen.
+* text=auto eol=lf
+
+# Los archivos generados por Prisma y Next no se tocan
+server/src/generated/** -text
+server/prisma/migrations/** -text
+client/.next/** -text
+package-lock.json -text
+
+# Binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
