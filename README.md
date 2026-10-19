@@ -32,6 +32,13 @@ cierra en WhatsApp.
 
 ## Empezar
 
+### Requisitos
+
+| Necesario          | Versión              | Nota                                                                                                        |
+| ------------------ | -------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Node**           | **22.19 o superior** | Recomendado 24. Por debajo de 22.19 los tests del cliente no arrancan: jsdom tira de undici 8, que lo exige |
+| **Docker Desktop** | Cualquiera reciente  | Solo para el Postgres de desarrollo                                                                         |
+
 ```bash
 git clone https://github.com/muk3k3/Bloom.git
 cd Bloom

@@ -35,11 +35,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Node 24, la misma version con la que se desarrolla.
+          # No bajar de 22.19: jsdom 30 tira de undici 8, que exige >=22.19.0.
+          node-version: 24
           cache: npm
 
       - name: Instalar dependencias
         run: npm ci
+
+      # El cliente de Prisma se genera, no se versiona (está en .gitignore).
+      # Sin este paso, typecheck falla con "Cannot find module generated/prisma/client".
+      - name: Generar el cliente de Prisma
+        run: npm run prisma:generate --workspace=server
 
       - name: Verificar tipos
         run: npm run typecheck
