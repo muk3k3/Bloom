@@ -41,6 +41,11 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      # El cliente de Prisma se genera, no se versiona (está en .gitignore).
+      # Sin este paso, typecheck falla con "Cannot find module generated/prisma/client".
+      - name: Generar el cliente de Prisma
+        run: npm run prisma:generate --workspace=server
+
       - name: Verificar tipos
         run: npm run typecheck
 
