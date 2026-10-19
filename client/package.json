@@ -1,0 +1,6 @@
+{
+  "name": "@bloom/client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sitio de Bloom — Next.js App Router"
+}
