@@ -4,7 +4,7 @@
  * Reglas del proyecto:
  *   · El dinero es `Decimal` en la API y sale con dos decimales, en soles
  *   · Las fechas van dd/mm/aaaa
- *   · La zona horaria siempre es America/Lima (UTC-5), no la del navegador
+ *   · Los instantes se muestran en America/Lima (UTC-5), no en la zona de quien mira
  */
 
 const ZONA = "America/Lima";
@@ -12,15 +12,25 @@ const ZONA = "America/Lima";
 /** Una fecha sin hora: "2026-10-20" */
 const SOLO_FECHA = /^\d{4}-\d{2}-\d{2}$/;
 
+const dosCifras = (valor: number) => String(valor).padStart(2, "0");
+
 /**
- * Convierte la entrada en un Date, o null si no es una fecha válida.
+ * Parte una fecha sin hora en sus números. Es un día del calendario:
+ * no tiene hora ni zona, y no debe moverse.
+ */
+function partesDeFecha(entrada: string): { anio: number; mes: number; dia: number } | null {
+  const [, anio, mes, dia] = entrada.match(/^(\d{4})-(\d{2})-(\d{2})$/) ?? [];
+
+  if (!anio || !mes || !dia) return null;
+
+  return { anio: Number(anio), mes: Number(mes), dia: Number(dia) };
+}
+
+/**
+ * Convierte un instante a Date, o null si no es válido.
  *
- * Trampa importante: `new Date("2026-10-20")` se interpreta como medianoche
- * **UTC**, que en Lima son las 19:00 del día anterior. Sin esto, una fecha
- * guardada el 20 se mostraría como 19.
- *
- * Un string con hora ("2026-10-20T18:00:00Z") sí es un instante, y se
- * convierte a Lima como corresponde.
+ * Un string con hora ("2026-10-20T18:00:00Z") SÍ es un instante: se convierte
+ * a Lima como corresponde.
  */
 function aFecha(entrada: string | Date): Date | null {
   if (entrada instanceof Date) {
@@ -29,11 +39,6 @@ function aFecha(entrada: string | Date): Date | null {
 
   if (typeof entrada !== "string" || entrada.trim() === "") {
     return null;
-  }
-
-  if (SOLO_FECHA.test(entrada)) {
-    const [anio, mes, dia] = entrada.split("-").map(Number);
-    return new Date(anio, mes - 1, dia);
   }
 
   const valor = new Date(entrada);
@@ -60,8 +65,20 @@ export function formatearMonto(monto: string | number): string {
   }).format(valor);
 }
 
-/** 20/10/2026 */
+/**
+ * 20/10/2026
+ *
+ * Una fecha sin hora se arma con sus propios números y NO pasa por Date ni por
+ * Intl. Si se construyera como medianoche y se formateara en Lima, en una
+ * máquina que no está en UTC-5 se mostraría un día antes — que es exactamente
+ * lo que pasaba.
+ */
 export function formatearFecha(fecha: string | Date): string {
+  if (typeof fecha === "string" && SOLO_FECHA.test(fecha)) {
+    const partes = partesDeFecha(fecha);
+    return `${dosCifras(partes!.dia)}/${dosCifras(partes!.mes)}/${partes!.anio}`;
+  }
+
   const valor = aFecha(fecha);
 
   if (!valor) {

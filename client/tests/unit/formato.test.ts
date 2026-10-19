@@ -43,7 +43,8 @@ describe("formatearFecha", () => {
   });
 
   it("acepta un objeto Date", () => {
-    expect(formatearFecha(new Date(2026, 9, 20))).toBe("20/10/2026");
+    // Mediodía UTC: cae dentro del mismo día en cualquier zona razonable
+    expect(formatearFecha(new Date("2026-10-20T12:00:00Z"))).toBe("20/10/2026");
   });
 
   it("no revienta con una fecha inválida", () => {
