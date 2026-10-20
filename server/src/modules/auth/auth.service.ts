@@ -1,12 +1,8 @@
 import { ForbiddenException, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NOMBRE_COOKIE, Sesion, crearToken, verificarToken } from "../../common/auth/cookie";
+import { CredencialesDto } from "./dto/credenciales.dto";
 import { AUTH_PROVEEDOR, AuthProveedor } from "./proveedor/auth-proveedor";
-
-export interface Credenciales {
-  email: string;
-  password: string;
-}
 
 export interface SesionActual extends Sesion {
   esPropietario: true;
@@ -23,7 +19,7 @@ export class AuthService {
    * Verifica las credenciales y devuelve el token de sesión.
    * Devuelve null si son incorrectas: el controller decide el 401.
    */
-  async ingresar({ email, password }: Credenciales): Promise<string | null> {
+  async ingresar({ email, password }: CredencialesDto): Promise<string | null> {
     const correo = await this.proveedor.verificar(email, password);
 
     if (!correo) {
