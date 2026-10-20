@@ -1,7 +1,8 @@
 import { Body, Controller, Get, HttpCode, Post, Res } from "@nestjs/common";
 import type { Response } from "express";
 import { Propietario, UsaPropietario } from "../../common/decorators/usa-propietario.decorator";
-import { AuthService, Credenciales } from "./auth.service";
+import { CredencialesDto } from "./dto/credenciales.dto";
+import { AuthService } from "./auth.service";
 
 @Controller("auth")
 export class AuthController {
@@ -10,7 +11,7 @@ export class AuthController {
   @Post("ingresar")
   @HttpCode(200)
   async ingresar(
-    @Body() credenciales: Credenciales,
+    @Body() credenciales: CredencialesDto,
     @Res({ passthrough: true }) respuesta: Response,
   ): Promise<{ mensaje: string }> {
     const token = await this.auth.ingresar(credenciales);
