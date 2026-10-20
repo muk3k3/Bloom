@@ -10,6 +10,9 @@ build/
 out/
 *.tsbuildinfo
 
+# Next.js reescribe este archivo en cada dev/build: no se versiona
+client/next-env.d.ts
+
 # Prisma: el cliente se genera, no se versiona
 server/src/generated/
 server/prisma/dev.db*
