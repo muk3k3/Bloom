@@ -23,7 +23,9 @@ jobs:
           POSTGRES_PASSWORD: bloom
           POSTGRES_DB: bloom
         ports:
-          - 5433:5433
+          # Formato HOST:CONTAINER. Postgres escucha en 5432 dentro del
+          # contenedor; el 5433 es el que prisma.config.ts usa por defecto.
+          - 5433:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -47,6 +49,13 @@ jobs:
       # Sin este paso, typecheck falla con "Cannot find module generated/prisma/client".
       - name: Generar el cliente de Prisma
         run: npm run prisma:generate --workspace=server
+
+      # La base del servicio postgres arranca vacía: sin este paso, cualquier
+      # test de integración falla con "relation does not exist". No hace falta
+      # DATABASE_URL: prisma.config.ts cae por defecto en localhost:5433, que
+      # es el puerto del host publicado arriba.
+      - name: Preparar la base de datos
+        run: npm run prisma:deploy --workspace=server
 
       - name: Verificar tipos
         run: npm run typecheck
