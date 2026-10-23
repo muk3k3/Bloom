@@ -1,10 +1,12 @@
-import { ValidationPipe, type INestApplication } from "@nestjs/common";
+import { type INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Test } from "@nestjs/testing";
 import cookieParser from "cookie-parser";
 import request from "supertest";
 import { AppModule } from "../../app.module";
 import { crearToken, NOMBRE_COOKIE } from "../../common/auth/cookie";
+import { MENSAJE_VALIDACION } from "../../common/validacion/errores";
+import { crearValidacion } from "../../common/validacion/pipe";
 import { PrismaService } from "../../prisma/prisma.service";
 
 /**
@@ -45,11 +47,10 @@ describe("categories — integración", () => {
 
     app = modulo.createNestApplication();
 
-    // Mismo cableado que main.ts: si esto difiere, la prueba miente.
+    // Mismo cableado que main.ts: si esto difiere, la prueba miente. Por eso
+    // el pipe lo trae de la misma función que usa el server que se despliega.
     app.setGlobalPrefix("api");
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
-    );
+    app.useGlobalPipes(crearValidacion());
     app.use(cookieParser());
 
     await app.init();
@@ -208,10 +209,45 @@ describe("categories — integración", () => {
     await conSesion(api().delete("/api/categorias/no-existe")).expect(404);
   });
 
-  it("rechaza un nombre vacío o de más de 60 caracteres", async () => {
-    await conSesion(api().post("/api/categorias")).send({ nombre: "   " }).expect(400);
-    await conSesion(api().post("/api/categorias"))
+  it("devuelve los 400 en la forma uniforme, con el detalle por campo", async () => {
+    const vacio = await conSesion(api().post("/api/categorias"))
+      .send({ nombre: "   " })
+      .expect(400);
+
+    // Igual que el 409: statusCode, message y errores por campo.
+    expect(vacio.body).toEqual({
+      statusCode: 400,
+      message: MENSAJE_VALIDACION,
+      errores: { nombre: "Escribe un nombre" },
+    });
+
+    const largo = await conSesion(api().post("/api/categorias"))
       .send({ nombre: "x".repeat(61) })
+      .expect(400);
+
+    expect(largo.body).toMatchObject({
+      statusCode: 400,
+      errores: { nombre: "El nombre puede tener hasta 60 caracteres" },
+    });
+
+    // Un campo que el DTO no declara: la base lo rifa y el mensaje llega en
+    // español (class-validator lo escribe en inglés).
+    const desconocido = await conSesion(api().post("/api/categorias"))
+      .send({ nombre: `${MARCA} valido ${corrida}`, sorpresa: "no" })
+      .expect(400);
+
+    expect(desconocido.body).toMatchObject({
+      statusCode: 400,
+      errores: { sorpresa: "Ese campo no existe" },
+    });
+
+    // Un body que ni llega a parsear. Express lo rifa ANTES del pipe, así
+    // que este caso no pasa por excepcionDeValidacion y su 400 es de
+    // body-parser. Solo se afirma que no sea un 500: el cliente siempre
+    // manda JSON bien formado.
+    await conSesion(api().post("/api/categorias"))
+      .set("Content-Type", "application/json")
+      .send('"hola"')
       .expect(400);
   });
 });
