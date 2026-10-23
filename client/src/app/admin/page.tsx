@@ -38,13 +38,23 @@ export default function PaginaAdmin() {
             disabled={salir.isPending}
             className="border-linea text-texto hover:bg-error-fondo hover:border-error/30 hover:text-error rounded-lg border px-4 py-2 text-sm transition-colors disabled:opacity-60"
           >
-            {salir.isPending ? "Saliendo…" : "Cerrar sesión"}
+            {salir.isPending ? "Saliendo..." : "Cerrar sesión"}
           </button>
         </header>
 
-        {/* Marcador de T6/T7: acá va el CRUD del catálogo */}
-        <div className="border-linea text-texto-apagado rounded-lg border border-dashed px-5 py-10 text-center text-sm">
-          El catálogo se construye en las próximas tareas.
+        <div className="border-linea flex flex-col gap-3 rounded-lg border px-5 py-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-texto font-medium">Categorías</p>
+            <p className="text-texto-apagado text-sm">
+              Añade, renombra o borra categorías del catálogo.
+            </p>
+          </div>
+          <a
+            href="/admin/categorias"
+            className="bg-rosa-600 hover:bg-rosa-700 focus-visible:ring-rosa-500 rounded-lg px-4 py-2 text-center text-sm font-medium text-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          >
+            Gestionar categorías
+          </a>
         </div>
       </div>
     </main>
