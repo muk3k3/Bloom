@@ -1,9 +1,9 @@
-import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { exigirEntorno } from "./common/auth/entorno";
+import { crearValidacion } from "./common/validacion/pipe";
 
 async function arrancar() {
   const app = await NestFactory.create(AppModule);
@@ -20,14 +20,9 @@ async function arrancar() {
   // Todo el API vive bajo /api, para que el cliente lo reescriba en un solo origen
   app.setGlobalPrefix("api");
 
-  // Valida los DTOs antes de que lleguen al service
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+  // Valida los DTOs antes de que lleguen al service. El pipe se construye en
+  // common/validacion/pipe.ts para que las pruebas usen exactamente este.
+  app.useGlobalPipes(crearValidacion());
 
   app.use(cookieParser());
 
