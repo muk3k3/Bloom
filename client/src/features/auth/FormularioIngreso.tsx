@@ -76,6 +76,7 @@ export function FormularioIngreso() {
     <form
       onSubmit={handleSubmit(alEnviar)}
       noValidate
+      aria-busy={isSubmitting}
       className="bg-superficie shadow-tarjeta flex flex-col gap-5 rounded-2xl border border-linea p-8"
     >
       <div className="flex flex-col gap-1">
@@ -86,8 +87,10 @@ export function FormularioIngreso() {
           id="email"
           type="email"
           autoComplete="email"
+          placeholder="nombre@correo.com"
           // autoFocus: cómodo en desktop, molesto en móvil. Solo desktop.
           autoFocus={typeof window !== "undefined" && window.innerWidth >= 768}
+          disabled={isSubmitting}
           aria-invalid={!!errors.email}
           aria-describedby={errors.email ? "error-email" : undefined}
           className={`rounded-lg border px-3 py-2.5 text-base outline-none transition-colors focus:ring-2 ${
@@ -112,6 +115,8 @@ export function FormularioIngreso() {
           id="password"
           type="password"
           autoComplete="current-password"
+          placeholder="Tu contraseña"
+          disabled={isSubmitting}
           aria-invalid={!!errors.password}
           aria-describedby={errors.password ? "error-password" : undefined}
           className={`rounded-lg border px-3 py-2.5 text-base outline-none transition-colors focus:ring-2 ${
@@ -137,9 +142,23 @@ export function FormularioIngreso() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="bg-rosa-600 hover:bg-rosa-700 focus-visible:ring-rosa-500 mt-1 flex h-11 items-center justify-center rounded-lg text-base font-medium text-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60"
+        aria-busy={isSubmitting}
+        className="bg-rosa-600 hover:bg-rosa-700 focus-visible:ring-rosa-500 mt-1 flex h-11 items-center justify-center gap-2 rounded-lg text-base font-medium text-white transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60"
       >
-        {isSubmitting ? "Entrando…" : "Entrar al panel"}
+        {isSubmitting ? (
+          <>
+            {/* El anillo es del token `superficie` (blanco puro), no un color
+                literal: sobre rosa-600 se ve igual y sigue la regla de tokens.
+                aria-hidden porque el texto de al lado ya dice qué pasa. */}
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 animate-spin rounded-full border-2 border-superficie/40 border-t-superficie"
+            />
+            Entrando…
+          </>
+        ) : (
+          "Entrar al panel"
+        )}
       </button>
     </form>
   );

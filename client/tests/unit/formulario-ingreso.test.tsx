@@ -199,4 +199,44 @@ describe("FormularioIngreso", () => {
       expect(push).toHaveBeenCalled();
     });
   });
+
+  it("muestra etiqueta y placeholder en español en los dos campos", () => {
+    render(conQuery(<FormularioIngreso />));
+
+    expect(screen.getByLabelText("Correo")).toHaveAttribute("placeholder", "nombre@correo.com");
+    expect(screen.getByLabelText("Contraseña")).toHaveAttribute("placeholder", "Tu contraseña");
+  });
+
+  it("deshabilita los campos y muestra el spinner mientras envía", async () => {
+    // La respuesta no llega hasta que la resolvemos a mano: así se ve el
+    // estado "enviando" de verdad y no un microtask ya terminado.
+    let terminar!: (r: Response) => void;
+    vi.mocked(fetch).mockReturnValue(
+      new Promise<Response>((ok) => {
+        terminar = ok;
+      }),
+    );
+
+    render(conQuery(<FormularioIngreso />));
+
+    escribir("Correo", "dueno@bloom.local");
+    escribir("Contraseña", "Bloom2026!");
+    await enviar();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Correo")).toBeDisabled();
+      expect(screen.getByLabelText("Contraseña")).toBeDisabled();
+
+      const boton = screen.getByRole("button", { name: /entrando/i });
+      expect(boton).toBeDisabled();
+      expect(boton).toHaveAttribute("aria-busy", "true");
+      expect(boton.querySelector(".animate-spin")).toBeTruthy();
+    });
+
+    terminar(responder({ mensaje: "ok" }));
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalled();
+    });
+  });
 });
